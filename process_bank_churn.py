@@ -65,39 +65,39 @@ def preprocess_data(raw_df: pd.DataFrame, scaler_numeric: bool = True) -> Tuple:
     def preprocess_new_data(new_df: pd.DataFrame, input_cols: List[str], 
                         scaler: Optional[StandardScaler], 
                         encoder: Optional[OneHotEncoder]) -> pd.DataFrame:
-    """
-    Preprocess new data (e.g. test set) using fitted scaler and encoder.
-
-    Args:
-        new_df (pd.DataFrame): Raw test data.
-        input_cols (List[str]): List of feature columns to keep.
-        scaler (StandardScaler or None): Fitted scaler from train data (or None if not used).
-        encoder (OneHotEncoder or None): Fitted encoder from train data.
-
-    Returns:
-        pd.DataFrame: Processed input features for prediction.
-    """
-    df = new_df.copy()
+        """
+        Preprocess new data (e.g. test set) using fitted scaler and encoder.
     
-    # Видаляємо колонку Surname, якщо є
-    df.drop(columns=["Surname"], errors="ignore", inplace=True)
-
-    # Вибираємо лише необхідні колонки
-    X = df[input_cols].copy()
-
-    # Визначаємо типи колонок
-    numeric_cols = X.select_dtypes(include='number').columns.tolist()
-    categorical_cols = X.select_dtypes('object').columns.tolist()
-
-    # Масштабування числових ознак (якщо scaler не None)
-    if scaler is not None:
-        X[numeric_cols] = scaler.transform(X[numeric_cols])
-
-    # One-hot encoding
-    if encoder is not None and categorical_cols:
-        encoded = encoder.transform(X[categorical_cols])
-        encoded_df = pd.DataFrame(encoded, columns=encoder.get_feature_names_out(categorical_cols), index=X.index)
-        X = pd.concat([X.drop(columns=categorical_cols), encoded_df], axis=1)
-
-    return X
+        Args:
+            new_df (pd.DataFrame): Raw test data.
+            input_cols (List[str]): List of feature columns to keep.
+            scaler (StandardScaler or None): Fitted scaler from train data (or None if not used).
+            encoder (OneHotEncoder or None): Fitted encoder from train data.
+    
+        Returns:
+            pd.DataFrame: Processed input features for prediction.
+        """
+        df = new_df.copy()
+        
+        # Видаляємо колонку Surname, якщо є
+        df.drop(columns=["Surname"], errors="ignore", inplace=True)
+    
+        # Вибираємо лише необхідні колонки
+        X = df[input_cols].copy()
+    
+        # Визначаємо типи колонок
+        numeric_cols = X.select_dtypes(include='number').columns.tolist()
+        categorical_cols = X.select_dtypes('object').columns.tolist()
+    
+        # Масштабування числових ознак (якщо scaler не None)
+        if scaler is not None:
+            X[numeric_cols] = scaler.transform(X[numeric_cols])
+    
+        # One-hot encoding
+        if encoder is not None and categorical_cols:
+            encoded = encoder.transform(X[categorical_cols])
+            encoded_df = pd.DataFrame(encoded, columns=encoder.get_feature_names_out(categorical_cols), index=X.index)
+            X = pd.concat([X.drop(columns=categorical_cols), encoded_df], axis=1)
+    
+        return X
 
